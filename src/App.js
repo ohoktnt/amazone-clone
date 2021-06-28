@@ -1,10 +1,13 @@
-import './App.css';
+import "./App.css";
+import Header from "./Header";
 
 function App() {
   return (
     // BEM convention for CSS
     <div className="app">
-      <h1>Hello World! lets build the Amazon Store </h1>
+      {/* Header */}
+      <Header />
+      {/* Home */}
     </div>
   );
 }
