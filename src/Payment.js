@@ -5,6 +5,7 @@ import { useStateValue } from "./StateProvider";
 import { Link, useHistory } from "react-router-dom";
 import { useElements, useStripe, CardElement } from "@stripe/react-stripe-js";
 import instance from "./axios";
+import { db } from "./firebase";
 
 // for price container
 import CurrencyFormat from "react-currency-format";
@@ -56,10 +57,25 @@ function Payment() {
       .then(({ paymentIntent }) => {
         // paymentIntent = payment confirmation
 
+        // NO SQL queries
+        db.collection("users")
+          .doc(user?.uid)
+          .collection("orders")
+          .doc(paymentIntent.id)
+          .set({
+            basket: basket,
+            amount: paymentIntent.amount,
+            created: paymentIntent.created,
+          });
+
         // if correct and all good
         setSucceeded(true);
         setError(null);
         setProcessing(false);
+
+        dispatch({
+          type: "EMPTY_BASKET",
+        });
 
         // replace instead of push, do not want user to be able to go back on payment page
         history.replace("/orders");
