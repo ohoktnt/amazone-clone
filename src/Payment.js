@@ -4,7 +4,7 @@ import "./Payment.css";
 import { useStateValue } from "./StateProvider";
 import { Link, useHistory } from "react-router-dom";
 import { useElements, useStripe, CardElement } from "@stripe/react-stripe-js";
-import axios from "axios";
+import instance from "./axios";
 
 // for price container
 import CurrencyFormat from "react-currency-format";
@@ -27,15 +27,19 @@ function Payment() {
     // generate the special stripe secret that allows us to charge a customer
     // basically updates the total to be sent to stripe for tranasction
     const getClientSecret = async () => {
-      const response = await axios({
+      const response = await instance({
         method: "post",
         // stripe expects the total in a currencies subunits
-        url: `/payments/create?total=${getBasketTotal(basket) * 100}`,
+        url: `/payments/create?total=${Math.round(
+          getBasketTotal(basket) * 100
+        )}`,
       });
       setClientSecret(response.data.clientSecret);
     };
     getClientSecret();
   }, [basket]);
+
+  console.log("THE SECRET IS >>> ", clientSecret);
 
   const handleSubmit = async (event) => {
     // do all the fancy stripe stuff
